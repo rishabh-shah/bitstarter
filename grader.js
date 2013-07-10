@@ -26,12 +26,21 @@ var program = require('commander');
 var cheerio = require('cheerio');
 var HTMLFILE_DEFAULT = "index.html";
 var CHECKSFILE_DEFAULT = "checks.json";
+var rest = require('restler');
+var sys = require('util');
 
 var assertFileExists = function(infile) {
     var instr = infile.toString();
     if(!fs.existsSync(instr)) {
-        console.log("%s does not exist. Exiting.", instr);
-        process.exit(1); // http://nodejs.org/api/process.html#process_process_exit_code
+//        console.log("%s does not exist. Exiting.", instr);
+//        process.exit(1); // http://nodejs.org/api/process.html#process_process_exit_code
+	rest.get(infile).on('complete', function(result){
+	    if(result instanceof Error){
+		sys.puts("Please enter proper file name or URL");
+	    }else{
+		return result;
+	    }
+	})
     }
     return instr;
 };
@@ -60,6 +69,7 @@ var clone = function(fn) {
     // http://stackoverflow.com/a/6772648
     return fn.bind({});
 };
+
 
 if(require.main == module) {
     program
